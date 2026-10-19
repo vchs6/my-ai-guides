@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Model Metadata",
+  "type": "object",
+  "properties": {
+    "model_id": {"type":"string"},
+    "name": {"type":"string"},
+    "version": {"type":"string"},
+    "architecture": {"type":"string"},
+    "training_data_ids": {"type":"array","items":{"type":"string"}},
+    "hyperparameters": {"type":"object"},
+    "metrics": {"type":"object"},
+    "model_card_url": {"type":"string","format":"uri"},
+    "storage_location": {"type":"string"},
+    "checksum": {"type":"string"},
+    "created_at": {"type":"string","format":"date-time"},
+    "intended_use": {"type":"string"},
+    "limitations": {"type":"string"}
+  },
+  "required": ["model_id","name","version"]
+}

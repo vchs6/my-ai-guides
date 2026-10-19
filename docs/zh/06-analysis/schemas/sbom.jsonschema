@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SBOM",
+  "type": "object",
+  "properties": {
+    "format": {"type":"string"},
+    "generated_at": {"type":"string","format":"date-time"},
+    "generated_by": {"type":"string"},
+    "components": {"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"version":{"type":"string"},"purl":{"type":"string"},"hashes":{"type":"object"},"licenses":{"type":"array","items":{"type":"string"}}}}}
+  },
+  "required": ["format","generated_at","components"]
+}
