@@ -1,0 +1,8 @@
+{
+  "id": "infra.rag.retrieve.v1",
+  "input": { "query": "如何为服务 X 轮换数据库凭证？", "k": 2 },
+  "mock_output": {
+    "retrieved_ids": ["doc-123","doc-987"],
+    "snippets": ["使用 vault 轮换凭证的操作步骤...","使用 AWS Secrets Manager 执行轮换..."]
+  }
+}

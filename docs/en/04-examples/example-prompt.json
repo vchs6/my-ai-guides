@@ -1,0 +1,8 @@
+{
+  "id": "infra.rag.retrieve.v1",
+  "input": { "query": "How to rotate database credentials for service X?", "k": 2 },
+  "mock_output": {
+    "retrieved_ids": ["doc-123","doc-987"],
+    "snippets": ["Rotate credentials using vault rotation playbook...","Use AWS secrets manager to rotate..."]
+  }
+}
