@@ -1,0 +1,47 @@
+spec_version: "openspec/v1"
+kind: agent
+id: project-a.decision_agent.v1
+version: v1
+name: Project A Decision Agent
+owner: team-a@example.com
+description: |
+  Sample decision_execution agent that simulates approving payments. Designed for demo and battle testing in sandboxed payment simulator.
+risk_level: high
+task_type: decision_execution
+decision_task: true
+decision_scope: billing_payment
+decision_actions:
+  - approve_payment
+  - initiate_refund
+authority_level: require_human
+autonomy_allowed: conditional
+required_approvals:
+  - role: finance_approver
+    contact: finance-team@example.com
+inputs:
+  - name: request
+    type: object
+outputs:
+  schema:
+    type: object
+    properties:
+      decision:
+        type: string
+      details:
+        type: object
+superpowers:
+  validate: true
+  publish_to_catalog: true
+  required_skill_version: ">=1.2.0"
+examples:
+  - input:
+      request:
+        vendor: "Vendor X"
+        amount: 50000
+    expected_output:
+      decision: "require_human_approval"
+      details:
+        reason: "amount_exceeds_threshold"
+
+notes: |
+  This agent is for demonstration and must not run in production without proper approvals and sandboxing.

@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Battle Case",
+  "type": "object",
+  "properties": {
+    "id": {"type":"string"},
+    "title": {"type":"string"},
+    "description": {"type":"string"},
+    "attack_type": {"type":"string"},
+    "task_type": {"type":"string","enum":["informational","transformational","decision_support","decision_execution","operational"]},
+    "decision_task": {"type":"boolean"},
+    "decision_scope": {"type":"string"},
+    "decision_actions": {"type":"array","items":{"type":"string"}},
+    "authority_level": {"type":"string","enum":["none","suggest","require_human","auto_with_approval"]},
+    "autonomy_allowed": {"type":"string","enum":["none","limited","conditional","full"]},
+    "required_approvals": {"type":"array","items":{"type":"object","properties":{"role":{"type":"string"},"contact":{"type":"string"}}}},
+    "expected_impact": {"type":"object","properties":{"business_metric":{"type":"string"},"severity_if_wrong":{"type":"string","enum":["low","medium","high"]}}},
+    "simulation_required": {"type":"boolean"},
+    "simulator_spec": {"type":"object"},
+    "rollback_possible": {"type":"boolean"},
+    "seed_conversation": {"type":"array","items":{"type":"object","properties":{"role":{"type":"string"},"content":{"type":"string"}}}},
+    "success_criteria": {"type":"array","items":{"type":"string"}},
+    "evaluation_metrics": {"type":"object"},
+    "reproducibility": {"type":"string"},
+    "severity": {"type":"string"},
+    "notes": {"type":"string"}
+  },
+  "required": ["id","title","attack_type","reproducibility"]
+}
