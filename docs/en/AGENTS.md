@@ -8,12 +8,21 @@ Scope
 
 Covers agent design, runtime harness, permissions model, prompt templates and prompt-as-code requirements, testing and Battle integration, logging and audit fields, and deployment controls.
 
+Important: OpenSpec & Superpowers
+
+This organization adopts OpenSpec and Superpowers as the primary development and orchestration tools for agent and prompt engineering. All agent artifacts, prompt templates, battle cases and runtime manifests SHOULD conform to the OpenSpec specification (where applicable) and be operable via the Superpowers Skill/CLI integration.
+
+- OpenSpec: used as the canonical specification format for agent manifests, prompt templates, input/output schemas, and battle-case metadata. Templates should include an OpenSpec-compliant header with `spec_version`, `kind` and `id` fields.
+- Superpowers: used as the engineering/runtime Skill that performs template validation, catalog publishing, sandboxed execution, and running battle suites. Agents must include meta fields required by the Superpowers Skill to enable automated validation and controlled execution.
+
+Teams MUST follow the "Skill Requirements" described in the separate integration guide `docs/en/07-integrations/openspec-superpowers.md` (and `docs/zh/07-integrations/openspec-superpowers.md`). The integration guide defines the minimum capabilities, authentication, and policy gates required to use Superpowers in your environment.
+
 1. Roles & Responsibilities
 
 - Product Owner: defines allowed agent capabilities and high-level acceptance criteria.
 - Agent Engineer: implements agent logic, templates, harness wiring, and unit tests.
 - Platform Owner: provides agent runtime, registry, and MCP endpoints.
-- Security / Red Team: defines forbidden actions, approves high-risk agents, runs Battle tests.
+- Security / Red Team: defines forbidden actions, approves high-risk agents, runs Battle tests via Superpowers.
 - SRE / Ops: observes runtime metrics, enforces quotas, handles incidents.
 
 2. Agent Classification & Risk Levels
@@ -39,8 +48,9 @@ Each agent must be represented as a prompt-as-code artifact containing metadata 
 - inputs schema & outputs schema (JSON Schema)
 - examples (positive/negative)
 - battle_suite_id (reference to battle cases)
+- spec_version (OpenSpec version)
 
-Templates should be stored under: `docs/02-projects/<project>/agents/` and exposed via the prompt catalog (MCP).
+Templates should be stored under: `docs/02-projects/<project>/agents/` and exposed via the prompt catalog (MCP). When using Superpowers, include the Superpowers metadata block (see integration guide) so the Skill can validate and publish the artifact.
 
 4. Harness / Runtime Requirements
 
@@ -48,7 +58,7 @@ The runtime must implement:
 
 - Planner/Executor separation: planning phase (decide actions) and execution phase (deterministic execution control).
 - Tool adapters: wrap external integrations with input validation, ACL checks, rate limits, and circuit breakers.
-- Human-in-loop hooks: for HIGH-risk actions provide interactive approval workflows.
+- Human-in-loop hooks: for HIGH-risk actions provide interactive approval workflows (Superpowers provides hooks to wire approval flows).
 - Checkpointing & rollback: persist execution state and support rollback where feasible.
 - Timeouts & retries: per-action and per-agent timeouts, bounded retries with backoff.
 - Secrets & credential handling: do not allow agents to embed credentials in prompts; use credential vault and scoped tokens.
@@ -81,14 +91,14 @@ Retention for audit logs: at least 90 days for non-sensitive artifacts; sensitiv
 
 - Unit tests: validate prompt template behavior using deterministic mocks and assert JSON schema outputs.
 - Integration tests: run agent harness with mock adapters to verify end-to-end flows.
-- Battle tests: associate each MEDIUM/HIGH agent with a battle_suite; PRs changing agent templates must run a battle-subset CI job.
+- Battle tests: associate each MEDIUM/HIGH agent with a battle_suite; PRs changing agent templates must run a battle-subset CI job using the Superpowers runner where possible.
 - Regression: store gold conversations and compare embeddings or key assertions rather than exact text where nondeterminism exists.
 
 8. Security & Safety Controls
 
 - Deny-list and allow-list: platform enforces forbidden tool/endpoint lists; agent metadata must list allowed_tools.
 - Rate limiting & quotas per agent and per tool.
-- Policy enforcement: automatic checks for prompt-injection patterns and escaping attempts during CI.
+- Policy enforcement: automatic checks for prompt-injection patterns and escaping attempts during CI (Superpowers includes validation plugins that can be enabled in CI pipelines).
 - Minimal privileges: principle of least privilege for tools and credentials used by agents.
 
 9. Deployment & Release Controls
@@ -124,6 +134,7 @@ Track these KPIs per agent:
 - Minimal agent metadata example (YAML)
 
 ```yaml
+spec_version: "openspec/v1"
 agent_id: infra.rag.assistant.v1
 name: Infra RAG Assistant
 owner: team-a@example.com
@@ -137,6 +148,9 @@ inputs:
 outputs:
   schema: { type: object }
 examples: []
+superpowers:
+  validate: true
+  publish_to_catalog: true
 ```
 
 14. Checklist for PRs that change agents
@@ -149,5 +163,5 @@ examples: []
 
 References
 
+- OpenSpec and Superpowers integration guide (see docs/en/07-integrations/openspec-superpowers.md)
 - Prompt-as-code patterns, MCP, prompt catalog best practices.
-- Battle protocol and red-team guidelines (see Battle-protocol.md).
